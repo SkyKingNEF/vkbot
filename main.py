@@ -1,5 +1,5 @@
 from subcommands import *
-
+from config import MAJOR_ADMIN_ID
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
 import traceback
@@ -8,6 +8,7 @@ import traceback
 session = vk_api.VkApi(token=tok)
 vk = session.get_api()
 longpoll = VkLongPoll(session)
+
 
 def chat_bot_vk():
     while True:
@@ -72,7 +73,7 @@ def chat_bot_vk():
                                 sender_chat(chat_id, message_id, show_ignorelist(ignore_list))
                             elif '?игнор' in msg_text:
                                 list_text = msg_text.split()
-                                if str(from_id) in admin_list:
+                                if str(from_id) in admin_list or from_id == MAJOR_ADMIN_ID:
                                     if list_text[1] == '+':
                                         if 'vk.com' in msg_text:
                                             user_link = user_id(list_text[2])
@@ -109,7 +110,7 @@ def chat_bot_vk():
                                 sender_chat(chat_id, message_id, show_adminlist(admin_list))
                             elif '?админ' in msg_text:
                                 list_text = msg_text.split()
-                                if str(from_id) in admin_list:
+                                if from_id == MAJOR_ADMIN_ID:
                                     if list_text[1] == '+':
                                         if 'vk.com' in msg_text:
                                             user_link = user_id(list_text[2])
@@ -266,7 +267,13 @@ def chat_bot_vk():
                     else: #если в игноре
                         continue
 
+        except FileNotFoundError:
+            f = open(NAME_IGNORE_LIST, 'w')
+            f.close()
+            f = open(NAME_ADMIN_LIST, 'w')
+            f.close()
         except:
             print(traceback.format_exc())
+
 
 chat_bot_vk()
